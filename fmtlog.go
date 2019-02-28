@@ -7,30 +7,28 @@ import (
 	"sync"
 )
 
-// 本地的格式缓存
-// 每次格式化日志需要计算当前时间的时分秒信息，当数据量很大时计算代价不能忽略
-// 于是在本地缓存 1s 过期时间的格式信息，当下一秒的新日志写入时触发缓存更新
-type formatCache struct {
-	LastUpdateAt         int64  // 格式最后更新的时间戳
-	shortDate, shortTime string // 缓存当前秒的时间格式
+// 本地秒级数据格式缓存
+type secondCache struct {
+	LastUpdateAt         int64
+	shortDate, shortTime string
 	longDate, longTime   string
 }
 
 var (
-	fmtCache = &formatCache{}
-	fmtLock  = sync.Mutex{} // 缓存互斥锁
+	secCache  = &secondCache{}
+	cacheLock = sync.Mutex{} // 缓存互斥锁
 )
 
-func setFmtCache(newCache *formatCache) {
-	fmtLock.Lock()
-	defer fmtLock.Unlock()
-	fmtCache = newCache
+func setSecCache(newCache *secondCache) {
+	cacheLock.Lock()
+	defer cacheLock.Unlock()
+	secCache = newCache
 }
 
-func getFmtCache() *formatCache {
-	fmtLock.Lock()
-	defer fmtLock.Unlock()
-	return fmtCache
+func getSecCache() *secondCache {
+	cacheLock.Lock()
+	defer cacheLock.Unlock()
+	return secCache
 }
 
 // 格式化日志
@@ -45,19 +43,18 @@ func FormatLogRecord(format string, rec *LogRecord) string {
 	if format == "" || rec == nil {
 		return ""
 	}
-
 	buf := bytes.NewBuffer(make([]byte, 0, 64))
 	recAt := rec.Created
 	recSec := rec.Created.Unix()
 
-	cache := getFmtCache()
+	cache := getSecCache()
 
 	// 缓存过期则更新
 	if cache.LastUpdateAt != recSec {
 		y, m, d := recAt.Year(), recAt.Month(), recAt.Day()
 		h, i, s := recAt.Hour(), recAt.Minute(), recAt.Second()
 		zone, _ := recAt.Zone()
-		newCache := &formatCache{
+		newCache := &secondCache{
 			LastUpdateAt: recSec,
 			shortTime:    fmt.Sprintf("%02d:%02d", h, i),
 			shortDate:    fmt.Sprintf("%02d/%02d/%02d", y, m, d),
@@ -65,7 +62,7 @@ func FormatLogRecord(format string, rec *LogRecord) string {
 			longDate:     fmt.Sprintf("%04d/%02d/%02d", y, m, d),
 		}
 		cache = newCache
-		setFmtCache(newCache)
+		setSecCache(newCache)
 	}
 
 	// "[%D %T] [%L] (%S) %M" // 处理预留 [] 等符号

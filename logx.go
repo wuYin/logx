@@ -19,7 +19,7 @@ func NewLogger() *Logger {
 }
 
 type Filter struct {
-	Level Level
+	MinLevel Level
 	LogWriter
 }
 
@@ -53,7 +53,7 @@ type LogRecord struct {
 // 将指定日志级别和写入位置的 LogWriter 添加到 logger
 func (l Logger) AddFilter(name string, level Level, writer LogWriter) Logger {
 	l[name] = &Filter{
-		Level:     level,
+		MinLevel:  level,
 		LogWriter: writer,
 	}
 	return l
@@ -84,7 +84,7 @@ func (l Logger) dispatch(level Level, format string, args ...interface{}) {
 	// 是否有能写 level 级的 filter
 	valid := false
 	for _, f := range l {
-		if f.Level <= level {
+		if f.MinLevel <= level {
 			valid = true
 			break
 		}
@@ -115,7 +115,7 @@ func (l Logger) dispatch(level Level, format string, args ...interface{}) {
 	}
 
 	for _, f := range l {
-		if f.Level <= level {
+		if f.MinLevel <= level {
 			f.LogWrite(rec)
 		}
 	}
