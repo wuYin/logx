@@ -8,7 +8,7 @@ import (
 func TestConsoleLogWriter_LogWrite(t *testing.T) {
 	l := NewConsoleLogWriter()
 	record := &LogRecord{
-		Level:   WARNING,
+		Level:   WARN,
 		Created: time.Now(),
 		Source:  "logx/console_test.go",
 		Message: "test warning msg",

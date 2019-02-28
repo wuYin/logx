@@ -1,10 +1,14 @@
 package logx
 
-import "time"
+import (
+	"fmt"
+	"runtime"
+	"strings"
+	"time"
+)
 
 const (
-	// 在写回前最多可以累计的日志数
-	LogBufMsgs = 32
+	LogBufMsgs = 32 // 在写回前最多可以累计的日志数
 )
 
 type Logger map[string]*Filter
@@ -19,24 +23,24 @@ type Filter struct {
 	LogWriter
 }
 
+type LogWriter interface {
+	LogWrite(rec *LogRecord) // 写日志
+	Close()                  // 日志写完毕后的资源清理工作
+}
+
 type Level int
 
 // 日志级别
 const (
 	FINE Level = iota
-	DEBUG
 	INFO
-	WARNING
+	DEBUG
+	WARN
 	ERROR
 	FATAL
 )
 
-var logLevels = [...]string{"FINE", "DEBG", "INFO", "WARN", "EROR", "FATL"}
-
-type LogWriter interface {
-	LogWrite(rec *LogRecord) // 写日志
-	Close()                  // 日志写完毕后的资源清理工作
-}
+var logLevels = [...]string{"FINE", "INFO", "DEBG", "WARN", "EROR", "FATL"}
 
 // 真正的日志行内容
 type LogRecord struct {
@@ -53,4 +57,58 @@ func (l Logger) AddFilter(name string, level Level, writer LogWriter) Logger {
 		LogWriter: writer,
 	}
 	return l
+}
+
+// 记录 debug 日志
+func (l Logger) Debug(arg0 interface{}, args ...interface{}) {
+	level := DEBUG
+	switch v := arg0.(type) {
+	case string:
+		l.dispatch(level, v, args...)
+	default:
+		format := fmt.Sprint(arg0) + strings.Repeat(" %v", len(args)) // 原样输出
+		l.dispatch(level, format, args...)
+	}
+}
+
+// 日志分发
+func (l Logger) dispatch(level Level, format string, args ...interface{}) {
+	// 是否有能写 level 级的 filter
+	valid := false
+	for _, f := range l {
+		if f.Level <= level {
+			valid = true
+			break
+		}
+	}
+	if !valid {
+		return
+	}
+
+	// 获取日志调用处
+	var src string
+	pc, _, fileLine, ok := runtime.Caller(2)
+	if ok {
+		src = fmt.Sprintf("%s:%d", runtime.FuncForPC(pc).Name(), fileLine)
+	}
+
+	// 格式化日志
+	msg := format
+	if len(args) > 0 {
+		msg = fmt.Sprintf(format, args...)
+	}
+
+	// 分发日志
+	rec := &LogRecord{
+		Level:   level,
+		Created: time.Now(),
+		Source:  src,
+		Message: msg,
+	}
+
+	for _, f := range l {
+		if f.Level <= level {
+			f.LogWrite(rec)
+		}
+	}
 }
