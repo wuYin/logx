@@ -6,8 +6,8 @@
 
 ## Feature
 
-- 多级别日志类型支持：`FINE, INFO, DEBG, WARN, EROR, FATL`
-- 多输出：v0.1 支持 console stdout 输出
+- 多级别支持：`FINE, INFO, DEBG, WARN, EROR, FATL`
+- 多输出支持：v0.1 支持日志输出到 console 和 file
 
 ## Usage
 
@@ -25,7 +25,7 @@ func main() {
 	defer l.Close()
 
 	l.AddFilter("console", logx.INFO, logx.NewConsoleLogWriter())
-	l.Debug("Test|Debug|%v", 10)
+	l.Debug("Test|Debug|%v", 10) // bingo
 }
 ```
 
@@ -37,6 +37,6 @@ func main() {
 
 - [ ] **v0.1**  2019-02-28
 
-  - ~~console 日志级别写入~~
+  - ~~console 日志写入~~
 
-  - file 日志级别写入
+  - file 日志写入
