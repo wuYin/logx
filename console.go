@@ -47,5 +47,6 @@ func (cw *ConsoleLogWriter) LogWrite(rec *LogRecord) {
 // 负责资源的回收
 func (cw *ConsoleLogWriter) Close() {
 	close(cw.writeCh)
-	time.Sleep(10 * time.Millisecond) // 等待 channel 中的数据全部写回日志
+	// TODO: 提高日志写回机制可靠性
+	time.Sleep(10 * time.Millisecond)
 }

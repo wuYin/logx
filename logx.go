@@ -59,6 +59,14 @@ func (l Logger) AddFilter(name string, level Level, writer LogWriter) Logger {
 	return l
 }
 
+// 保证各 writer 的日志都能写完
+func (l Logger) Close() {
+	for fName, f := range l {
+		f.Close()
+		delete(l, fName)
+	}
+}
+
 // 记录 debug 日志
 func (l Logger) Debug(arg0 interface{}, args ...interface{}) {
 	level := DEBUG
