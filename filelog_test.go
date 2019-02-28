@@ -7,9 +7,10 @@ import (
 )
 
 func TestFileLogWriter_LogWrite(t *testing.T) {
-	w := NewFileLogWriter("demo.log", 3, 10)
+	w := NewFileLogWriter("demo.log", 3, 2)
 
-	for i := 0; i < 4; i++ {
+	// 最大为 3 行最多备份 2 个，写入 10 行第 0~2 行最旧日志将被自动丢弃
+	for i := 0; i < 3*3+1; i++ {
 		rec := &LogRecord{
 			Level:   ERROR,
 			Created: time.Now(),
