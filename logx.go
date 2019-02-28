@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	LogChanCapacity = 32                     // 缓冲日志 channel 大小
-	DefaultFormat   = "[%D %T] [%L] (%S) %M" // 默认格式
+	LogChanCapacity  = 32                     // 缓冲日志 channel 大小
+	DefaultFormat    = "[%D %T] [%L] (%S) %M" // 默认格式
+	DefaultMaxBackup = 9                      // 最大日志备份数
 )
 
 type Logger map[string]*Filter
@@ -44,6 +45,15 @@ const (
 var (
 	logLevels = [...]string{"FINE", "INFO", "DEBG", "WARN", "EROR", "FATL"}
 )
+
+func EnumLevel(level string) Level {
+	for i, l := range logLevels {
+		if level == l {
+			return Level(i)
+		}
+	}
+	return FINE
+}
 
 // 真正的日志行内容
 type LogRecord struct {

@@ -1,0 +1,22 @@
+[
+    {
+        "enable": true,
+        "filter_type": "console",
+        "filter_name": "console_1",
+        "file_name": "",
+        "min_level": "INFO",
+        "format": "",
+        "max_line": "",
+        "max_size": ""
+    },
+    {
+        "enable": true,
+        "filter_type": "file",
+        "filter_name": "file_1",
+        "file_name": "demo.log",
+        "min_level": "DEBG",
+        "format": "",
+        "max_line": "3",
+        "max_size": "2k"
+    }
+]
