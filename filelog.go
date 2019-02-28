@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// 写文件时
+// 写出到文件的 logger
 type FileLogWriter struct {
 	format  string
 	fName   string
@@ -17,25 +17,25 @@ type FileLogWriter struct {
 	curLine int
 	maxLine int
 
+	// 日志文件大小
+	curSize int
+	maxSize int
+
 	// 最多日志备份数
 	maxBackup int
 }
 
-func NewFileLogWriter(fileName string, maxLine, maxBackup int) *FileLogWriter {
-	if fileName == "" || maxLine == 0 {
-		panic("invalid param")
-	}
-
+func NewFileLogWriter(fileName string) *FileLogWriter {
 	w := &FileLogWriter{
 		format:    DefaultFormat,
 		fName:     fileName,
-		maxLine:   maxLine,
-		maxBackup: maxBackup,
 		writeCh:   make(chan *LogRecord, LogChanCapacity),
+		maxBackup: DefaultMaxBackup,
 	}
 
 	f, err := os.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0660)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "open file %s fail: %v", fileName, err)
 		return nil
 	}
 	w.file = f
@@ -47,21 +47,23 @@ func NewFileLogWriter(fileName string, maxLine, maxBackup int) *FileLogWriter {
 
 func (w *FileLogWriter) run() {
 	for rec := range w.writeCh {
+
 		// 日志已写满则备份
-		if w.curLine >= w.maxLine {
+		if w.curLine >= w.maxLine || w.curSize >= w.maxSize {
 			if err := w.backup(); err != nil {
 				fmt.Fprintf(os.Stderr, "backup failed: %s", err)
 				return
 			}
 		}
 
-		_, err := fmt.Fprint(w.file, FormatLogRecord(w.format, rec))
+		n, err := fmt.Fprint(w.file, FormatLogRecord(w.format, rec))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "write failed: %s", err)
 			return
 		}
 
 		w.curLine++
+		w.curSize += n
 	}
 }
 
@@ -95,7 +97,9 @@ func (w *FileLogWriter) backup() error {
 		return err
 	}
 	w.file = f
+
 	w.curLine = 0
+	w.curSize = 0
 
 	return nil
 }
@@ -107,4 +111,21 @@ func (w *FileLogWriter) LogWrite(rec *LogRecord) {
 func (w *FileLogWriter) Close() {
 	w.file.Close()
 	time.Sleep(10 * time.Millisecond)
+}
+
+// 属性设置相关
+func (w *FileLogWriter) SetFormat(format string) {
+	w.format = format
+}
+
+func (w *FileLogWriter) SetMaxLine(line int) {
+	w.maxLine = line
+}
+
+func (w *FileLogWriter) SetMaxSize(size int) {
+	w.maxSize = size
+}
+
+func (w *FileLogWriter) SetMaxBackup(backup int) {
+	w.maxBackup = backup
 }
