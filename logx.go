@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	LogBufMsgs = 32 // 在写回前最多可以累计的日志数
+	LogChanCapacity = 32                     // 缓冲日志 channel 大小
+	DefaultFormat   = "[%D %T] [%L] (%S) %M" // 默认格式
 )
 
 type Logger map[string]*Filter
@@ -40,7 +41,9 @@ const (
 	FATAL
 )
 
-var logLevels = [...]string{"FINE", "INFO", "DEBG", "WARN", "EROR", "FATL"}
+var (
+	logLevels = [...]string{"FINE", "INFO", "DEBG", "WARN", "EROR", "FATL"}
+)
 
 // 真正的日志行内容
 type LogRecord struct {
