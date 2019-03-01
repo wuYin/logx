@@ -28,8 +28,8 @@
         "enable": true,
         "filter_type": "file",
         "filter_name": "file_1",
-        "file_name": "demo.log",
-        "min_level": "DEBG",
+        "file_name": "warning.log",
+        "min_level": "WARN",
         "max_line": "3",
         "max_size": "2k"
     }
@@ -41,9 +41,7 @@
 ```go
 package main
 
-import (
-	"github.com/wuYin/logx"
-)
+import "github.com/wuYin/logx"
 
 func main() {
 	logger, err := logx.LoadLogger("config.json")
@@ -52,13 +50,16 @@ func main() {
 	}
 	defer logger.Close()
 
-	logger.Debug("Test|Debug|%v", 10) // line 14 // bingo
+	logger.Debug("Debug Logs|%s", "disk usage 40%")
+	logger.Fatal("Fatal Logs|%s", "disk full")
 }
 ```
 
 执行效果：
 
- <img src="https://images.yinzige.com/2019-02-28-logx.gif" width=90%>
+配置的 `WARN` 级 **file** 日志不会写入 `DEBUG` 信息，而 `INFO` 级 **console** 日志则全部写入：
+
+ <img src="https://images.yinzige.com/2019-03-01-logx2.gif" width=90%>
 
 ## Version
 
