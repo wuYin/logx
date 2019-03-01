@@ -70,7 +70,6 @@ func (w *FileLogWriter) run() {
 }
 
 // 日志已满时将已有文件备份
-// 日志命名规则：x.log x.log.1
 func (w *FileLogWriter) backup() error {
 	if _, err := os.Stat(w.fName); err != nil {
 		return err
@@ -128,7 +127,7 @@ func (w *FileLogWriter) SetMaxSize(size int) {
 	w.maxSize = size
 }
 
-// disk.2019-02-28-001.log
+// disk.log -> disk.2019-02-28-001.log
 func (w *FileLogWriter) getBackupName(seq int) (fileName string) {
 	today := time.Now().Format("2006-01-02")
 
