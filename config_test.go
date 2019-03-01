@@ -11,5 +11,6 @@ func TestLoadLogger(t *testing.T) {
 	}
 	defer logger.Close()
 
-	logger.Debug("Test|Debug|%v", 10)
+	logger.Debug("Debug Logs|%s", "disk usage 40%")
+	logger.Fatal("Fatal Logs|%s", "disk full")
 }

@@ -13,8 +13,8 @@
         "enable": true,
         "filter_type": "file",
         "filter_name": "file_1",
-        "file_name": "demo.log",
-        "min_level": "DEBG",
+        "file_name": "warning.log",
+        "min_level": "WARN",
         "format": "",
         "max_line": "3",
         "max_size": "2k"
