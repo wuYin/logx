@@ -49,7 +49,7 @@ func (w *FileLogWriter) run() {
 	for rec := range w.writeCh {
 
 		// 日志已写满则备份
-		if w.curLine >= w.maxLine || w.curSize >= w.maxSize {
+		if (w.maxLine > 0 && w.curLine >= w.maxLine)|| (w.maxSize > 0 && w.curSize >= w.maxSize) {
 			if err := w.backup(); err != nil {
 				fmt.Fprintf(os.Stderr, "backup failed: %s", err)
 				return

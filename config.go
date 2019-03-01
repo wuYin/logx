@@ -77,7 +77,7 @@ func loadConsoleFilter(conf FilterConfig) *ConsoleLogWriter {
 func loadFileFilter(conf FilterConfig) (*FileLogWriter, error) {
 	maxLine := parseUnitNum(1000, conf.MaxLine)
 	maxSize := parseUnitNum(1024, conf.MaxSize)
-	if maxLine == 0 || maxSize == 0 || conf.FileName == "" {
+	if maxLine < 0 || maxSize < 0 || conf.FileName == "" {
 		return nil, fmt.Errorf("invalid args: %v", conf)
 	}
 
