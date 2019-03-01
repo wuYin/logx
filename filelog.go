@@ -3,6 +3,8 @@ package logx
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -49,7 +51,7 @@ func (w *FileLogWriter) run() {
 	for rec := range w.writeCh {
 
 		// 日志已写满则备份
-		if (w.maxLine > 0 && w.curLine >= w.maxLine)|| (w.maxSize > 0 && w.curSize >= w.maxSize) {
+		if (w.maxLine > 0 && w.curLine >= w.maxLine) || (w.maxSize > 0 && w.curSize >= w.maxSize) {
 			if err := w.backup(); err != nil {
 				fmt.Fprintf(os.Stderr, "backup failed: %s", err)
 				return
@@ -76,10 +78,10 @@ func (w *FileLogWriter) backup() error {
 
 	var backupPath string
 	for n := w.maxBackup - 1; n >= 1; n-- {
-		cur := fmt.Sprintf("%s.%d", w.fName, n)
-		next := fmt.Sprintf("%s.%d", w.fName, n+1)
-		if _, err := os.Stat(cur); err == nil {
-			os.Rename(cur, next) // 自动淘汰最旧日志
+		cur := w.getBackupName(n)
+		next := w.getBackupName(n + 1)
+		if _, err := os.Stat(cur); err == nil { // 自动淘汰今日最旧日志
+			os.Rename(cur, next)
 		}
 		backupPath = cur
 	}
@@ -124,6 +126,20 @@ func (w *FileLogWriter) SetMaxLine(line int) {
 
 func (w *FileLogWriter) SetMaxSize(size int) {
 	w.maxSize = size
+}
+
+// disk.2019-02-28-001.log
+func (w *FileLogWriter) getBackupName(seq int) (fileName string) {
+	today := time.Now().Format("2006-01-02")
+
+	ext := filepath.Ext(w.fName)
+	fPath := w.fName[:len(w.fName)-len(ext)]
+
+	bits := fmt.Sprintf("%d", len(strconv.Itoa(w.maxBackup)))
+	backupFormat := "%s.%s-%0" + bits + "d%s"
+
+	fileName = fmt.Sprintf(backupFormat, fPath, today, seq, ext)
+	return
 }
 
 func (w *FileLogWriter) SetMaxBackup(backup int) {
