@@ -3,11 +3,7 @@
         "enable": true,
         "filter_type": "console",
         "filter_name": "console_1",
-        "file_name": "",
-        "min_level": "INFO",
-        "format": "",
-        "max_line": "",
-        "max_size": ""
+        "min_level": "INFO"
     },
     {
         "enable": true,
