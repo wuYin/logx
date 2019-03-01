@@ -64,8 +64,8 @@ type LogRecord struct {
 }
 
 // 将指定日志级别和写入位置的 LogWriter 添加到 logger
-func (l Logger) AddFilter(name string, level Level, writer LogWriter) Logger {
-	l[name] = &Filter{
+func (l Logger) AddFilter(filterName string, level Level, writer LogWriter) Logger {
+	l[filterName] = &Filter{
 		MinLevel:  level,
 		LogWriter: writer,
 	}
