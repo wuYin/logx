@@ -6,15 +6,15 @@
 
 ## Feature
 
-- 多级别支持：`FINE, INFO, DEBG, WARN, EROR, FATL`
-- 多输出支持：日志可输出到 console/file，其中 file 类型日志支持自动备份
+- 多级别支持：`FINE, INFO, DEBUG, WARN, ERROR, FATAL`
+- 多输出支持：日志可输出到 console / file，其中 file 类型日志支持自动备份
 - 多样化配置：支持配置单个日志最大行数，单个日志最大空间，最旧日志自动清理
 
 ## Usage
 
 下载依赖：`go get github.com/wuYin/logx`
 
-添加配置 `config.json`
+添加配置： `config.json`
 
 ```json
 [
@@ -51,13 +51,11 @@ func main() {
 	defer logger.Close()
 
 	logger.Debug("Debug Logs|%s", "disk usage 40%")
-	logger.Fatal("Fatal Logs|%s", "disk full")
+	logger.Fatal("Fatal Logs|%s", "disk full") 
 }
 ```
 
-执行效果：
-
-配置的 `WARN` 级 **file** 日志不会写入 `DEBUG` 信息，而 `INFO` 级 **console** 日志则全部写入：
+执行写入：配置的 `WARN` 级 file 日志不会写入 `DEBUG` 信息，而 `INFO` 级 console 日志则全部输出：
 
  <img src="https://images.yinzige.com/2019-03-01-logx2.gif" width=90%>
 
