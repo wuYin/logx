@@ -27,17 +27,24 @@ type FileLogWriter struct {
 	maxBackup int
 }
 
-func NewFileLogWriter(fileName string) *FileLogWriter {
+func NewFileLogWriter(filePath string) *FileLogWriter {
 	w := &FileLogWriter{
 		format:    DefaultFormat,
-		fName:     fileName,
+		fName:     filePath,
 		writeCh:   make(chan *LogRecord, LogChanCapacity),
 		maxBackup: DefaultMaxBackup,
 	}
 
-	f, err := os.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0660)
+	f, err := os.OpenFile(filePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0660)
+	if os.IsNotExist(err) {
+		dir := filepath.Dir(filePath)
+		if err = os.MkdirAll(dir, os.ModePerm); err != nil {
+			panic(err)
+		}
+		f, _ = os.OpenFile(filePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0660)
+	}
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "open file %s fail: %v", fileName, err)
+		fmt.Fprintf(os.Stderr, "open file %s fail: %v", filePath, err)
 		return nil
 	}
 	w.file = f
