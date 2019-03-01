@@ -80,18 +80,6 @@ func (l Logger) Close() {
 	}
 }
 
-// 记录 debug 日志
-func (l Logger) Debug(arg0 interface{}, args ...interface{}) {
-	level := DEBUG
-	switch v := arg0.(type) {
-	case string:
-		l.dispatch(level, v, args...)
-	default:
-		format := fmt.Sprint(arg0) + strings.Repeat(" %v", len(args)) // 原样输出
-		l.dispatch(level, format, args...)
-	}
-}
-
 // 日志分发
 func (l Logger) dispatch(level Level, format string, args ...interface{}) {
 	// 是否有能写 level 级的 filter
@@ -131,5 +119,72 @@ func (l Logger) dispatch(level Level, format string, args ...interface{}) {
 		if f.MinLevel <= level {
 			f.LogWrite(rec)
 		}
+	}
+}
+
+// 记录各级别日志
+func (l Logger) Fine(arg0 interface{}, args ...interface{}) {
+	level := FINE
+	switch v := arg0.(type) {
+	case string:
+		l.dispatch(level, v, args...)
+	default:
+		format := fmt.Sprint(arg0) + strings.Repeat(" %v", len(args)) // 原样输出
+		l.dispatch(level, format, args...)
+	}
+}
+
+func (l Logger) Info(arg0 interface{}, args ...interface{}) {
+	level := INFO
+	switch v := arg0.(type) {
+	case string:
+		l.dispatch(level, v, args...)
+	default:
+		format := fmt.Sprint(arg0) + strings.Repeat(" %v", len(args)) // 原样输出
+		l.dispatch(level, format, args...)
+	}
+}
+
+func (l Logger) Debug(arg0 interface{}, args ...interface{}) {
+	level := DEBUG
+	switch v := arg0.(type) {
+	case string:
+		l.dispatch(level, v, args...)
+	default:
+		format := fmt.Sprint(arg0) + strings.Repeat(" %v", len(args)) // 原样输出
+		l.dispatch(level, format, args...)
+	}
+}
+
+func (l Logger) Warn(arg0 interface{}, args ...interface{}) {
+	level := WARN
+	switch v := arg0.(type) {
+	case string:
+		l.dispatch(level, v, args...)
+	default:
+		format := fmt.Sprint(arg0) + strings.Repeat(" %v", len(args)) // 原样输出
+		l.dispatch(level, format, args...)
+	}
+}
+
+func (l Logger) Error(arg0 interface{}, args ...interface{}) {
+	level := ERROR
+	switch v := arg0.(type) {
+	case string:
+		l.dispatch(level, v, args...)
+	default:
+		format := fmt.Sprint(arg0) + strings.Repeat(" %v", len(args)) // 原样输出
+		l.dispatch(level, format, args...)
+	}
+}
+
+func (l Logger) Fatal(arg0 interface{}, args ...interface{}) {
+	level := FATAL
+	switch v := arg0.(type) {
+	case string:
+		l.dispatch(level, v, args...)
+	default:
+		format := fmt.Sprint(arg0) + strings.Repeat(" %v", len(args)) // 原样输出
+		l.dispatch(level, format, args...)
 	}
 }
