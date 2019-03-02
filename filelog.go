@@ -41,7 +41,10 @@ func NewFileLogWriter(filePath string) *FileLogWriter {
 		if err = os.MkdirAll(dir, os.ModePerm); err != nil {
 			panic(err)
 		}
-		f, _ = os.OpenFile(filePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0660)
+		f, err = os.OpenFile(filePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0660)
+		if err != nil {
+			panic(err)
+		}
 	}
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "open file %s fail: %v", filePath, err)
@@ -117,8 +120,10 @@ func (w *FileLogWriter) LogWrite(rec *LogRecord) {
 }
 
 func (w *FileLogWriter) Close() {
+	t := time.Tick(10 * time.Millisecond)
+	<-t
+	close(w.writeCh)
 	w.file.Close()
-	time.Sleep(10 * time.Millisecond)
 }
 
 // 属性设置相关
