@@ -1,12 +1,19 @@
 package main
 
-import "github.com/wuYin/logx"
+import (
+	"github.com/wuYin/logx"
+	"os"
+)
 
 func main() {
 	logger, err := logx.LoadLogger("config.json")
 	if err != nil {
 		panic(err)
 	}
+	defer func() {
+		os.RemoveAll("logs")
+		os.Remove("urgent.log")
+	}()
 	defer logger.Close()
 
 	// 写入所有文件
