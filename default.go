@@ -14,6 +14,7 @@ func init() {
 }
 
 func Fine(arg0 interface{}, args ...interface{}) {
+	defer stdLogger.Close()
 	level := FINE
 	switch v := arg0.(type) {
 	case string:
@@ -25,6 +26,7 @@ func Fine(arg0 interface{}, args ...interface{}) {
 }
 
 func Info(arg0 interface{}, args ...interface{}) {
+	defer stdLogger.Close()
 	level := INFO
 	switch v := arg0.(type) {
 	case string:
@@ -36,6 +38,7 @@ func Info(arg0 interface{}, args ...interface{}) {
 }
 
 func Debug(arg0 interface{}, args ...interface{}) {
+	defer stdLogger.Close()
 	level := DEBUG
 	switch v := arg0.(type) {
 	case string:
@@ -47,6 +50,7 @@ func Debug(arg0 interface{}, args ...interface{}) {
 }
 
 func Warn(arg0 interface{}, args ...interface{}) {
+	defer stdLogger.Close()
 	level := WARN
 	switch v := arg0.(type) {
 	case string:
@@ -58,6 +62,7 @@ func Warn(arg0 interface{}, args ...interface{}) {
 }
 
 func Error(arg0 interface{}, args ...interface{}) {
+	defer stdLogger.Close()
 	level := ERROR
 	switch v := arg0.(type) {
 	case string:
@@ -69,6 +74,7 @@ func Error(arg0 interface{}, args ...interface{}) {
 }
 
 func Fatal(arg0 interface{}, args ...interface{}) {
+	defer stdLogger.Close()
 	level := FATAL
 	switch v := arg0.(type) {
 	case string:
