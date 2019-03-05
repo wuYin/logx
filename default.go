@@ -8,8 +8,10 @@ import (
 var stdLogger = NewLogger()
 
 func init() {
+	console := NewConsoleLogWriter()
+	console.SetFormat("[%D %T] [%L] %M")
 	stdLogger = &Logger{
-		"stdout": &Filter{DEBUG, NewConsoleLogWriter()},
+		"stdout": &Filter{DEBUG, console},
 	}
 }
 
